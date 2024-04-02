@@ -67,10 +67,63 @@ void test_postorder()
     }
 }
 
+void test_lca()
+{
+    std::string newick = "(((A:0.1,B:0.2)N1:0.3,(C:0.4,D:0.5)N2:0.6)N3:0.7,(E:0.8,F:0.9,G:1.0)N4:1.1)Root:1.2;";
+    const auto tree = sapling::io::parse_newick(newick);
+
+    /// Test depth node assignment
+    assert((*tree.get_by_label("A"))->get_depth() == 3);
+    assert((*tree.get_by_label("B"))->get_depth() == 3);
+    assert((*tree.get_by_label("C"))->get_depth()  == 3);
+    assert((*tree.get_by_label("D"))->get_depth()  == 3);
+    assert((*tree.get_by_label("E"))->get_depth()  == 2);
+    assert((*tree.get_by_label("F"))->get_depth()  == 2);
+    assert((*tree.get_by_label("G"))->get_depth()  == 2);
+    assert(tree.get_root()->get_depth()  == 0);
+
+    // Test LCA for two nodes
+    auto a_node = tree.get_by_label("A");
+    auto d_node = tree.get_by_label("D");
+    if (a_node && d_node) {
+        auto lca_node = tree.lca(*a_node, *d_node);
+        assert(lca_node != nullptr);
+        assert(lca_node->get_label() == "N3");
+    }
+
+    // Test LCA for multiple nodes
+    auto e_node = tree.get_by_label("E");
+    auto f_node = tree.get_by_label("F");
+    auto g_node = tree.get_by_label("G");
+    if (e_node && f_node && g_node) {
+        std::vector<const sapling::phylo_node*> nodes = { *e_node, *f_node, *g_node };
+        auto lca_node = tree.lca(nodes);
+        assert(lca_node != nullptr);
+        assert(lca_node->get_label() == "N4");
+    }
+
+    auto c_node = tree.get_by_label("C");
+    if (a_node && c_node && d_node) {
+        std::vector<const sapling::phylo_node*> nodes = { *a_node, *c_node, *d_node };
+        auto lca_node = tree.lca(nodes);
+        assert(lca_node != nullptr);
+        assert(lca_node->get_label() == "N3");
+    }
+
+    if (a_node && c_node && e_node) {
+        std::vector<const sapling::phylo_node*> nodes = { *a_node, *c_node, *e_node };
+        auto lca_node = tree.lca(nodes);
+        assert(lca_node != nullptr);
+        assert(lca_node->get_label() == "Root");
+    }
+
+}
+
 int main()
 {
     test_postorder();
     test_visit_tree();
+    test_lca();
 
     std::cout << "OK" << std::endl;
     return 0;

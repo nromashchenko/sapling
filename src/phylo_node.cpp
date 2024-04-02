@@ -42,6 +42,7 @@ phylo_node::phylo_node(std::string label, branch_length_type branch_length, phyl
       , _branch_length(branch_length)
       , _num_nodes(0)
       , _num_leaves(0)
+      , _depth(-1)
       , _parent(parent)
 {}
 
@@ -135,6 +136,16 @@ void phylo_node::set_num_leaves(size_t num_leaves)
     _num_leaves = num_leaves;
 }
 
+size_t phylo_node::get_depth() const noexcept
+{
+    return _depth;
+}
+
+void phylo_node::set_depth(size_t depth)
+{
+    _depth = depth;
+}
+
 const std::vector<phylo_node*>& phylo_node::get_children() const
 {
     return _children;
@@ -148,6 +159,7 @@ void phylo_node::clean()
     _branch_length = 0.0;
     _num_nodes = 0;
     _num_leaves = 0;
+    _depth = -1;
     _children.clear();
     _parent = nullptr;
 }
@@ -183,6 +195,7 @@ phylo_node* phylo_node::copy()
     new_node->_branch_length = _branch_length;
     new_node->_num_nodes = _num_nodes;
     new_node->_num_leaves = _num_leaves;
+    new_node->_depth = _depth;
     new_node->_parent = nullptr;
 
     for (const auto& child : _children)

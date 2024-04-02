@@ -108,6 +108,10 @@ namespace sapling
 
         void set_num_leaves(size_t num_leaves);
 
+        size_t get_depth() const noexcept;
+
+        void set_depth(size_t depth);
+
         [[nodiscard]]
         const std::vector<phylo_node*>& get_children() const;
 
@@ -146,6 +150,9 @@ namespace sapling
 
         /// The total number of leaves in the subtree including this node
         size_t _num_leaves;
+
+        /// The distance in the number of nodes from the root. The root has depth of 0
+        int _depth;
 
         std::vector<phylo_node*> _children;
         phylo_node* _parent;

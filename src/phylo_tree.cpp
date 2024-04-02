@@ -112,7 +112,7 @@ void tree::index()
     _index_preorder_id();
     _index_postorder_id();
     _index_labels();
-
+    _index_depth();
     _index_nodes();
 }
 
@@ -158,6 +158,40 @@ tree tree::copy() const
     return tree(new_root);
 }
 
+
+const phylo_node* tree::lca(const phylo_node* x, const phylo_node* y) const
+{
+    /// Step 1: Bring x and y to the same level
+    while (x->get_depth() > y->get_depth()) {
+        x = x->get_parent();
+    }
+    while (y->get_depth() > x->get_depth()) {
+        y = y->get_parent();
+    }
+
+    /// Step 2: Find common ancestor
+    while (x != y) {
+        x = x->get_parent();
+        y = y->get_parent();
+    }
+
+    return x;
+}
+
+const phylo_node* tree::lca(const std::vector<const phylo_node*>& nodes) const
+{
+    if (nodes.empty())
+    {
+        return nullptr;
+    }
+
+    const phylo_node* current_lca = nodes[0];
+    for (size_t i = 1; i < nodes.size(); ++i) {
+        current_lca = lca(current_lca, nodes[i]);
+    }
+    return current_lca;
+}
+
 void tree::_index_preorder_id()
 {
     _preorder_id_to_node.clear();
@@ -191,6 +225,26 @@ void tree::_index_labels()
     for (auto& node : visit_subtree(_root))
     {
         _label_to_node[node.get_label()] = &node;
+    }
+}
+
+void tree::_index_depth()
+{
+    _index_depth_recursive(_root, 0);
+}
+
+void tree::_index_depth_recursive(phylo_node* node, int depth)
+{
+    if (!node)
+    {
+        return;
+    }
+
+    node->set_depth(depth);
+
+    for (phylo_node* child : node->get_children())
+    {
+        _index_depth_recursive(child, depth + 1);
     }
 }
 
@@ -240,7 +294,10 @@ void tree::_index_nodes()
             node.set_subtree_branch_length(subtree_branch_length);
         }
     }
+
+    // Assuming other necessary tree and node functions are defined
 }
+
 
 namespace sapling
 {

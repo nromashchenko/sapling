@@ -339,7 +339,6 @@ namespace sapling {
     /// Non-copyable. Phylo-nodes are not modifiable.
     class tree
     {
-        friend class tree_extender;
     public:
         /// Member types
         /// const iterator type. Performs a post-order depth-first search
@@ -399,10 +398,21 @@ namespace sapling {
         /// Creates a copy of the tree. We prefer to have this method and the copy constructor deleted
         /// to make sure we never copy by mistake, and always move trees.
         tree copy() const;
+
+        // Assuming other necessary tree and node functions are defined
+
+        /// Find the least common ancestor of two nodes
+        const phylo_node* lca(const phylo_node* x, const phylo_node* y) const;
+
+        /// Find the least common ancestor of many nodes
+        const phylo_node* lca(const std::vector<const phylo_node*>& nodes) const;
+
     private:
         void _index_preorder_id();
         void _index_postorder_id();
         void _index_labels();
+        void _index_depth();
+        void _index_depth_recursive(phylo_node* node, int depth);
         void _index_nodes();
 
         /// \brief A root node.
