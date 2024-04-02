@@ -1,17 +1,62 @@
-cmake_minimum_required(VERSION 3.27)
+cmake_minimum_required(VERSION 3.14)
 project(sapling)
 
 set(CMAKE_CXX_STANDARD 17)
 
+# Find required Boost components
 find_package(Boost COMPONENTS iostreams filesystem REQUIRED)
 
-add_executable(sapling
-        src/main.cpp
+# Define the library target
+add_library(sapling
         src/phylo_tree.cpp include/sapling/tree.h
         src/phylo_node.cpp include/sapling/phylo_node.h
         src/newick.cpp include/sapling/newick.h
-        src/io.cpp include/sapling/io.h
-        include/sapling/phylo_node.h)
+        src/io.cpp include/sapling/io.h)
 
-target_include_directories(sapling PUBLIC include)
+# Include directories for the library
+target_include_directories(sapling PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:include>)
+
+# Link libraries
 target_link_libraries(sapling PUBLIC Boost::iostreams Boost::filesystem)
+
+
+# Option to build tests
+option(BUILD_TESTS "Build the tests for Sapling" OFF)
+
+# Test target
+if(BUILD_TESTS)
+    SET(CMAKE_BUILD_TYPE "Debug")
+    add_executable(tests tests/tests.cpp)
+    target_include_directories(tests PRIVATE include)
+    target_link_libraries(tests PRIVATE sapling)
+endif()
+
+
+# Installation rules for the library
+install(TARGETS sapling
+        EXPORT sapling-targets
+        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION lib
+        RUNTIME DESTINATION bin
+        INCLUDES DESTINATION include)
+
+# Install the header files
+install(DIRECTORY include/sapling DESTINATION include)
+
+# Generate and install the export file
+install(EXPORT sapling-targets
+        FILE saplingTargets.cmake
+        NAMESPACE sapling::
+        DESTINATION lib/cmake/sapling)
+
+# Create a version file
+#include(CMakePackageConfigHelpers)
+#write_basic_package_version_file("saplingConfigVersion.cmake"
+#        VERSION 0.1)
+##        COMPATIBILITY SameMajorVersion)
+
+# Install the config and version files
+install(FILES "saplingConfig.cmake" "saplingConfigVersion.cmake"
+        DESTINATION lib/cmake/sapling)
