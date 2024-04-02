@@ -30,19 +30,19 @@
 #include <algorithm>
 #include <type_traits>
 
-namespace sap
+namespace sapling
 {
-    class phylo_tree;
+    class tree;
     class phylo_node;
 }
 
-namespace sap
+namespace sapling
 {
     //////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief A node of a phylogenetic tree.
     class phylo_node
     {
-        friend sap::phylo_tree;
+        friend sapling::tree;
     public:
         /// Member types
 

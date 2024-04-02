@@ -27,29 +27,29 @@
 #include <string>
 #include <string_view>
 
-namespace sap
+namespace sapling
 {
-    class phylo_tree;
+    class tree;
 }
 
-namespace sap::io
+namespace sapling::io
 {
     /// \brief Loads a phylogenetic tree from a newick formatted file.
-    sap::phylo_tree load_newick(const std::string& file_name);
+    sapling::tree load_newick(const std::string& file_name);
 
     /// \brief Parses a phylogenetic tree from a newick formatted string.
-    sap::phylo_tree parse_newick(std::string_view newick_string);
+    sapling::tree parse_newick(std::string_view newick_string);
 
     /// \brief Constructs a Newick-formatted string from the input tree.
     /// Depending on the jplace parameter, it builds
     ///     false) Pure newick: (label:branch_length,label:branch_length)...
     ///     true) Jplace: (label:branch_length{node_postorder_id}, ...)...
-    std::string to_newick(const sap::phylo_tree& tree, bool jplace=false);
+    std::string to_newick(const sapling::tree& tree, bool jplace=false);
 }
 
 /// \brief Outputs a tree in Jplace-extended Newick format:
 /// (label:branch_length{node_postorder_id}, ...)
-std::ostream& operator<<(std::ostream& out, const sap::phylo_tree& tree);
+std::ostream& operator<<(std::ostream& out, const sapling::tree& tree);
 
 
 #endif //SAPLING_NEWICK_H

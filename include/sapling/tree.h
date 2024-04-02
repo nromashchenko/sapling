@@ -21,15 +21,15 @@
 // SOFTWARE.
 
 
-#ifndef SAPLING_PHYLO_TREE_H
-#define SAPLING_PHYLO_TREE_H
+#ifndef SAPLING_TREE_H
+#define SAPLING_TREE_H
 
 
 #include <type_traits>
 #include <iterator>
 #include "phylo_node.h"
 
-namespace sap {
+namespace sapling {
     namespace impl
     {
         /// \brief Finds the leftmost leaf of a subtree.
@@ -337,7 +337,7 @@ namespace sap {
     /// \brief A phylogenetic tree class
     /// \defails phylo_tree is only constructable by the i2l::io::load_newick function.
     /// Non-copyable. Phylo-nodes are not modifiable.
-    class phylo_tree
+    class tree
     {
         friend class tree_extender;
     public:
@@ -349,12 +349,12 @@ namespace sap {
         using value_pointer = phylo_node*;
 
         /// Ctors, dtor and operator=
-        phylo_tree(value_pointer root);
-        phylo_tree(phylo_tree&&) noexcept;
-        phylo_tree(const phylo_tree&) = delete;
-        phylo_tree& operator=(const phylo_tree&) = delete;
-        phylo_tree& operator=(phylo_tree&&) = delete;
-        ~phylo_tree() noexcept;
+        tree(value_pointer root);
+        tree(tree&&) noexcept;
+        tree(const tree&) = delete;
+        tree& operator=(const tree&) = delete;
+        tree& operator=(tree&&) = delete;
+        ~tree() noexcept;
 
 
         /// Iterators
@@ -398,7 +398,7 @@ namespace sap {
 
         /// Creates a copy of the tree. We prefer to have this method and the copy constructor deleted
         /// to make sure we never copy by mistake, and always move trees.
-        phylo_tree copy() const;
+        tree copy() const;
     private:
         void _index_preorder_id();
         void _index_postorder_id();
@@ -421,7 +421,7 @@ namespace sap {
         std::unordered_map<std::string, const phylo_node*> _label_to_node;
     };
 
-    void save_tree(const phylo_tree& tree, const std::string& filename);
+    void save_tree(const tree& tree, const std::string& filename);
 }
 
-#endif //SAPLING_PHYLO_TREE_H
+#endif //SAPLING_TREE_H

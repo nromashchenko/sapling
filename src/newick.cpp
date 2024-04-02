@@ -28,15 +28,15 @@
 //#include <boost/tokenizer.hpp>
 #include <iomanip>
 #include <sstream>
-#include "io.h"
-#include "phylo_tree.h"
-#include "newick.h"
+#include <sapling/io.h>
+#include <sapling/tree.h>
+#include <sapling/newick.h>
 
 using std::string, std::string_view;
-using namespace sap;
-using namespace sap::io;
+using namespace sapling;
+using namespace sapling::io;
 
-namespace sap::io
+namespace sapling::io
 {
     /// \brief A class for parsing .newick-formatted files.
     /// \details This class parses phylogenetic trees in the newick format. It designed to support
@@ -251,13 +251,13 @@ void newick_parser::_parse_node_text()
     _node_text.clear();
 }
 
-phylo_tree sap::io::load_newick(const string& file_name)
+tree sapling::io::load_newick(const string& file_name)
 {
     std::cout << "Loading newick: " + file_name << std::endl;
 
     /// Load a tree from file
     newick_parser parser;
-    sap::io::buffered_reader reader(file_name);
+    sapling::io::buffered_reader reader(file_name);
     if (reader.good())
     {
         while (!reader.empty())
@@ -272,16 +272,16 @@ phylo_tree sap::io::load_newick(const string& file_name)
     }
 
     /// Assign post-order ids to the phylo_node's
-    auto tree = phylo_tree{ parser.get_root() };
+    auto tree = sapling::tree{parser.get_root() };
     std::cout << "Loaded a tree of " << tree.get_node_count() << " nodes.\n\n" << std::flush;
     return tree;
 }
 
-phylo_tree sap::io::parse_newick(std::string_view newick_string)
+tree sapling::io::parse_newick(std::string_view newick_string)
 {
     newick_parser parser;
     parser.parse(newick_string);
-    return phylo_tree{ parser.get_root() };
+    return tree{parser.get_root() };
 }
 
 
@@ -313,7 +313,7 @@ void to_newick(std::ostream& out, const phylo_node& node, bool jplace)
     }
 }
 
-std::string sap::io::to_newick(const phylo_tree& tree, bool jplace)
+std::string sapling::io::to_newick(const tree& tree, bool jplace)
 {
     std::ostringstream stream;
     ::to_newick(stream, *(tree.get_root()), jplace);

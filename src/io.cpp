@@ -24,9 +24,9 @@
 #include <fstream>
 #include <string>
 #include <streambuf>
-#include "io.h"
+#include <sapling/io.h>
 
-using namespace sap::io;
+using namespace sapling::io;
 using std::string;
 using std::fpos;
 using std::ifstream;
@@ -103,7 +103,7 @@ void buffered_reader::_read_next_chunk()
     }
 }
 
-std::string sap::io::read_as_string(const std::string& filename)
+std::string sapling::io::read_as_string(const std::string& filename)
 {
     /// FIXME: error handling
     std::ifstream stream(filename);

@@ -21,10 +21,9 @@
 // SOFTWARE.
 
 
+#include <sapling/phylo_node.h>
 
-#include "phylo_node.h"
-
-using namespace sap;
+using namespace sapling;
 using std::vector;
 using std::string;
 using std::move;

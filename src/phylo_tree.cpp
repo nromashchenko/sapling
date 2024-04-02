@@ -21,28 +21,28 @@
 // SOFTWARE.
 
 
-#include "phylo_tree.h"
-#include "newick.h"
+#include <sapling/tree.h>
+#include <sapling/newick.h>
 #include <filesystem>
 #include <algorithm>
 #include <fstream>
 
 namespace fs = std::filesystem;
-using namespace sap;
-using namespace sap::impl;
+using namespace sapling;
+using namespace sapling::impl;
 using std::vector;
 using std::string;
 using std::move;
 using std::begin, std::end;
 
 
-phylo_tree::phylo_tree(phylo_node* root)
+tree::tree(phylo_node* root)
     : _root{ root }, _node_count{ 0 }
 {
     index();
 }
 
-phylo_tree::phylo_tree(phylo_tree&& other) noexcept
+tree::tree(tree&& other) noexcept
 {
     _root = other._root;
     other._root = nullptr;
@@ -55,52 +55,52 @@ phylo_tree::phylo_tree(phylo_tree&& other) noexcept
     _label_to_node = std::move(other._label_to_node);
 }
 
-phylo_tree::~phylo_tree() noexcept
+tree::~tree() noexcept
 {
     delete _root;
 }
 
-phylo_tree::const_iterator phylo_tree::begin() const noexcept
+tree::const_iterator tree::begin() const noexcept
 {
     return visit_subtree(_root).begin();
 }
 
-phylo_tree::const_iterator phylo_tree::end() const noexcept
+tree::const_iterator tree::end() const noexcept
 {
     return visit_subtree(_root).end();
 }
 
-phylo_tree::iterator phylo_tree::begin() noexcept
+tree::iterator tree::begin() noexcept
 {
     return visit_subtree<postorder_tree_iterator<false>>(_root).begin();
 }
 
-phylo_tree::iterator phylo_tree::end() noexcept
+tree::iterator tree::end() noexcept
 {
     return visit_subtree<postorder_tree_iterator<false>>(_root).end();
 }
 
-size_t phylo_tree::get_node_count() const noexcept
+size_t tree::get_node_count() const noexcept
 {
     return _node_count;
 }
 
-phylo_tree::value_pointer phylo_tree::get_root() const noexcept
+tree::value_pointer tree::get_root() const noexcept
 {
     return _root;
 }
 
-void phylo_tree::set_root(value_pointer root)
+void tree::set_root(value_pointer root)
 {
     _root = root;
 }
 
-bool phylo_tree::is_rooted() const noexcept
+bool tree::is_rooted() const noexcept
 {
     return _root && _root->get_children().size() < 3;
 }
 
-void phylo_tree::index()
+void tree::index()
 {
     if (_root->get_parent())
     {
@@ -116,7 +116,7 @@ void phylo_tree::index()
     _index_nodes();
 }
 
-std::optional<const phylo_node*> phylo_tree::get_by_preorder_id(phylo_node::id_type preorder_id) const noexcept
+std::optional<const phylo_node*> tree::get_by_preorder_id(phylo_node::id_type preorder_id) const noexcept
 {
     if (const auto it = _preorder_id_to_node.find(preorder_id); it != _postorder_id_node_mapping.end())
     {
@@ -128,7 +128,7 @@ std::optional<const phylo_node*> phylo_tree::get_by_preorder_id(phylo_node::id_t
     }
 }
 
-std::optional<const phylo_node*> phylo_tree::get_by_postorder_id(phylo_node::id_type postorder_id) const noexcept
+std::optional<const phylo_node*> tree::get_by_postorder_id(phylo_node::id_type postorder_id) const noexcept
 {
     if (const auto it = _postorder_id_node_mapping.find(postorder_id); it != _postorder_id_node_mapping.end())
     {
@@ -140,7 +140,7 @@ std::optional<const phylo_node*> phylo_tree::get_by_postorder_id(phylo_node::id_
     }
 }
 
-std::optional<const phylo_node*> phylo_tree::get_by_label(const std::string& label) const noexcept
+std::optional<const phylo_node*> tree::get_by_label(const std::string& label) const noexcept
 {
     if (const auto it = _label_to_node.find(label); it != _label_to_node.end())
     {
@@ -152,13 +152,13 @@ std::optional<const phylo_node*> phylo_tree::get_by_label(const std::string& lab
     }
 }
 
-phylo_tree phylo_tree::copy() const
+tree tree::copy() const
 {
     auto new_root = _root->copy();
-    return phylo_tree(new_root);
+    return tree(new_root);
 }
 
-void phylo_tree::_index_preorder_id()
+void tree::_index_preorder_id()
 {
     _preorder_id_to_node.clear();
 
@@ -171,7 +171,7 @@ void phylo_tree::_index_preorder_id()
     }
 }
 
-void phylo_tree::_index_postorder_id()
+void tree::_index_postorder_id()
 {
     _postorder_id_node_mapping.clear();
 
@@ -184,7 +184,7 @@ void phylo_tree::_index_postorder_id()
     }
 }
 
-void phylo_tree::_index_labels()
+void tree::_index_labels()
 {
     _label_to_node.clear();
 
@@ -194,7 +194,7 @@ void phylo_tree::_index_labels()
     }
 }
 
-void phylo_tree::_index_nodes()
+void tree::_index_nodes()
 {
     _node_count = 0;
 
@@ -242,11 +242,11 @@ void phylo_tree::_index_nodes()
     }
 }
 
-namespace sap
+namespace sapling
 {
-    void save_tree(const phylo_tree& tree, const std::string& filename)
+    void save_tree(const tree& tree, const std::string& filename)
     {
         std::ofstream out(filename);
-        out << sap::io::to_newick(tree);
+        out << sapling::io::to_newick(tree);
     }
 }
