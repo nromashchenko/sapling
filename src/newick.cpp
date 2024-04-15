@@ -24,8 +24,6 @@
 
 #include <iostream>
 #include <stack>
-#include <boost/algorithm/string/predicate.hpp>
-//#include <boost/tokenizer.hpp>
 #include <iomanip>
 #include <sstream>
 #include <sapling/io.h>
@@ -34,9 +32,8 @@
 
 using std::string, std::string_view;
 using namespace sapling;
-using namespace sapling::io;
 
-namespace sapling::io
+namespace sapling
 {
     /// \brief A class for parsing .newick-formatted files.
     /// \details This class parses phylogenetic trees in the newick format. It designed to support
@@ -225,6 +222,13 @@ phylo_node* newick_parser::_finish_node()
     return current_node;
 }
 
+template <class T>
+bool stars_with(const std::string& string, const T& prefix)
+{
+    return string.rfind(prefix, 0) == 0;
+}
+
+
 void newick_parser::_parse_node_text()
 {
     phylo_node* current_node = _node_stack.top();
@@ -235,8 +239,7 @@ void newick_parser::_parse_node_text()
         const auto found = _node_text.find_last_of(':');
 
         // if node label presented
-        if (!boost::starts_with(_node_text, ":"))
-        {
+        if (stars_with(_node_text, ':')) {
             current_node->set_label(_node_text.substr(0, found));
         }
 
@@ -251,9 +254,9 @@ void newick_parser::_parse_node_text()
     _node_text.clear();
 }
 
-tree sapling::io::load_newick(const string& file_name)
+tree sapling::load_newick(const string& file_name)
 {
-    std::cout << "Loading newick: " + file_name << std::endl;
+    //std::cout << "Loading newick: " + file_name << std::endl;
 
     /// Load a tree from file
     newick_parser parser;
@@ -273,11 +276,11 @@ tree sapling::io::load_newick(const string& file_name)
 
     /// Assign post-order ids to the phylo_node's
     auto tree = sapling::tree{parser.get_root() };
-    std::cout << "Loaded a tree of " << tree.get_node_count() << " nodes.\n\n" << std::flush;
+    //std::cout << "Loaded a tree of " << tree.get_node_count() << " nodes.\n\n" << std::flush;
     return tree;
 }
 
-tree sapling::io::parse_newick(std::string_view newick_string)
+tree sapling::parse_newick(std::string_view newick_string)
 {
     newick_parser parser;
     parser.parse(newick_string);
@@ -313,7 +316,7 @@ void to_newick(std::ostream& out, const phylo_node& node, bool jplace)
     }
 }
 
-std::string sapling::io::to_newick(const tree& tree, bool jplace)
+std::string sapling::to_newick(const tree& tree, bool jplace)
 {
     std::ostringstream stream;
     ::to_newick(stream, *(tree.get_root()), jplace);

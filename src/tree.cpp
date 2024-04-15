@@ -304,6 +304,6 @@ namespace sapling
     void save_tree(const tree& tree, const std::string& filename)
     {
         std::ofstream out(filename);
-        out << sapling::io::to_newick(tree);
+        out << sapling::to_newick(tree);
     }
 }

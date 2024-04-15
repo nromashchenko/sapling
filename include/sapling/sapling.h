@@ -21,35 +21,12 @@
 // SOFTWARE.
 
 
-#ifndef SAPLING_NEWICK_H
-#define SAPLING_NEWICK_H
 
-#include <string>
-#include <string_view>
+#ifndef SAPLING_SAPLING_H
+#define SAPLING_SAPLING_H
 
-namespace sapling
-{
-    class tree;
-}
+#include <sapling/phylo_node.h>
+#include <sapling/tree.h>
+#include <sapling/newick.h>
 
-namespace sapling
-{
-    /// \brief Loads a phylogenetic tree from a newick formatted file.
-    sapling::tree load_newick(const std::string& file_name);
-
-    /// \brief Parses a phylogenetic tree from a newick formatted string.
-    sapling::tree parse_newick(std::string_view newick_string);
-
-    /// \brief Constructs a Newick-formatted string from the input tree.
-    /// Depending on the jplace parameter, it builds
-    ///     false) Pure newick: (label:branch_length,label:branch_length)...
-    ///     true) Jplace: (label:branch_length{node_postorder_id}, ...)...
-    std::string to_newick(const sapling::tree& tree, bool jplace=false);
-}
-
-/// \brief Outputs a tree in Jplace-extended Newick format:
-/// (label:branch_length{node_postorder_id}, ...)
-std::ostream& operator<<(std::ostream& out, const sapling::tree& tree);
-
-
-#endif //SAPLING_NEWICK_H
+#endif //SAPLING_SAPLING_H
